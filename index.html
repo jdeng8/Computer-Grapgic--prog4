@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Prog 3: Rasterization Shell</title>
+    
+    <link type="text/css" rel="stylesheet" href="rasterize.css">
+
+    <script type="text/javascript" src="gl-matrix.js"></script>
+    <script type="text/javascript" src="game.js"></script>
+  </head>
+
+  <body onload="main();">
+    <canvas id="myImageCanvas" width="512" height="512"></canvas>
+    <canvas id="myWebGLCanvas" width="512" height="512" onclick="shot(event)"></canvas>
+
+    <div id="overlay">
+      <div>Score: <span id="score"></span></div>
+      <div>Energy: <span id="energy"></span></div>
+      <div>Level: <span id="level"></span></div>
+    </div>
+    <div id="notice">
+      <div><span id="text">press Enter to start <br /> press ESC to stop <br /> press Space to pause</span></div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,28 @@
+.container {
+    position: relative;
+}
+#myWebGLCanvas {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    z-index: 10;
+}
+
+#myImageCanvas {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    z-index: 0;
+}
+#overlay {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    z-index: 0;
+}
+#notice {
+    position: absolute;
+    left: 200px;
+    top: 256px;
+    z-index: 0;
+}

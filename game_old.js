@@ -44,12 +44,12 @@ var rad = 0.018;
 var city = [];
 var missile = [];
 var anti_missile;
-var missile_interval = 50;
+var missile_interval = 100;
 var animationTime = missile_interval;
 var antis = [];
 
 var missile_rate = 0.005;
-var anti_rate = 0.1;
+var anti_rate = 0.05;
 var building_num = 21;
 var animationId = -1;
 
@@ -81,7 +81,7 @@ function shot(event) {
 
 function newMissile(s){
     animationTime++;
-    if(animationTime > s) {
+    if(animationTime*missile_rate *100 > s) {
         animationTime = 0;
         return true;
     }

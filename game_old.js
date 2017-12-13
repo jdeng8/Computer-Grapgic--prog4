@@ -60,16 +60,13 @@ var level = 0;
 
 function shot(event) {
     if(energy > 0){
-        var x = (512-event.clientX)/512 ;
-        var y = (512 - event.clientY)/512;
+        var x = event.clientX/256 - 1 ;
+        var y = (512 - event.clientY)/256 -1;
 
-        x = x*2-0.5;
-        y = y*2-0.5;
-        // console.log(event.clientX,event.clientY,x,y);
         var ox = anti_missile.vertices[1][0];
         var oy = anti_missile.vertices[1][1];
+        // console.log(x,y,ox,oy);
         var k = (y - oy)/(x - ox);
-        // console.log(k);
         // if(y<oy) k *=-1;
         var anti = {
             "x": ox, "y": oy, "z": 0.5, 
@@ -106,7 +103,7 @@ function clearArray(){
     missile =[];
     antis = [];
     city = constructCity(building_num,0.1);
-    anti_missile = construct_anti_missile(building_num,0.01);
+    anti_missile = construct_anti_missile(building_num,0.1);
     city.push(anti_missile);
     score = 0;
     energy = 20;
@@ -121,21 +118,13 @@ function clearArray(){
 function constructCity(num, height){
     if(num%2 == 0) num += 1;
     var buildings = [];
-    var width = 2/num;
-    var ground = -0.5;
-    var left = -0.5;
+    var width = 2.0/num;
+    var ground = -1;
+    var left = -1;
     var right = left + width;
     var amb_building = vec3.fromValues(0.1,0.1,0.1);
     var dif_building = vec3.fromValues(0.6,0.6,0.6);
     var spe_building = vec3.fromValues(0.3,0.3,0.3);
-
-// var tmp = {
-//             "material": {"ambient": [0.5,0.5,0.5], "diffuse": [0.5,0.5,0.5], "specular": [0.5,0.5,0.5], "n":5}, 
-//             "vertices": [[-0.5, -0.5, 0.5],[0.5, 1.5, 0.5],[1.5,1.5,0.5]],
-//             "normals": [[0, 0, -1],[0, 0, -1],[0, 0, -1]],
-//             "triangles": [[0,1,2]]
-//           }
-//         buildings.push(tmp);
 
     for(var i =0; i<num; i++){
         if(i == (num-1)/2){
@@ -151,7 +140,7 @@ function constructCity(num, height){
         vec3.add(dif,dif_building,[Math.random()*0.1,Math.random()*0.1,Math.random()*0.1]);
         vec3.add(spe,spe_building,[Math.random()*0.1,Math.random()*0.1,Math.random()*0.1]);
 
-        var ceiling = -0.45+Math.random()*0.05;
+        var ceiling = -1 + height - Math.random()*0.06;
 
         var building = {
             "material": {"ambient": amb, "diffuse": dif, "specular": spe, "n":5}, 
@@ -169,14 +158,14 @@ function construct_anti_missile(num,height){
     if(num%2 == 0) num += 1;
     var pos = (num-1)/2;
     var width = 2.0/num;
-    var left = 0.4545;
+    var left = pos * width -1;
     var right = left + width;
     var mid = left/2 + right/2;
-    var ground = -0.5;
+    var ground = -1;
     
     var anti_missile = {
             "material": {"ambient": [0.2,0.2,0.2], "diffuse": [1,0.84,0], "specular": [0.2,0.2,0.2], "n":15}, 
-            "vertices": [[left, ground, 0.5],[mid, -0.2, 0.5],[right,ground,0.5]],
+            "vertices": [[left, ground, 0.5],[mid, height-1, 0.5],[right,ground,0.5]],
             "normals": [[0, 0, -1],[0, 0, -1],[0, 0, -1]],
             "triangles": [[0,1,2]]
         }
@@ -184,11 +173,10 @@ function construct_anti_missile(num,height){
 }
 
 function generateMissile(){
-    var height = 1.6;
-    var pos = Math.random()*2-0.5;
-    var dest = Math.random()*2-0.5;
-    var k = (height+0.5)/(pos - dest);
-    // console.log(pos,dest,k);
+    var height = 1;
+    var pos = Math.random()*2-1;
+    var dest = Math.random()*2-1;
+    var k = (height - (-0.95))/(pos - dest);
     var m = {
         "x": pos, "y": height, "z": 0.5, 
         "a":rad, "b":rad, "c":rad,
@@ -207,14 +195,9 @@ function missile_descend(rate){
         var ang = Math.atan(missile[i].k);
         var newY = missile[i].y + Math.sin(ang)*rate;
         var newX = missile[i].x + Math.cos(ang)*rate;
-        if(missile[i].k >= 1.5/2-0.25){
-            ang = Math.atan(-missile[i].k);
-            newX = missile[i].x - Math.cos(ang)*rate;
-            newY = missile[i].y + Math.sin(ang)*rate;
-        }
         missile[i].y = newY;
         missile[i].x = newX;
-        if(missile[i].y < - 0.5) missile_explosion.push(i);
+        if(missile[i].y < - 0.95) missile_explosion.push(i);
     }
     missile_explosion.sort();
 
@@ -222,7 +205,6 @@ function missile_descend(rate){
         var city_index = -1;
         for(var j = 0; j < city.length; j++){
             if(destroyCity(missile[missile_explosion[i]],city[j])){
-                // console.log(missile[missile_explosion[i]].dest, city[j].vertices);
                 city_index = j;
                 break;
             }
@@ -233,7 +215,7 @@ function missile_descend(rate){
         }
         missile.splice(missile_explosion[i],1);
     }
-    // if(missile.length > 10) missile.splice(0,3);
+    if(missile.length > 10) missile.splice(0,3);
 }
 function destroyCity(m, c){
     if(m.dest >= c.vertices[0][0] && m.dest <= c.vertices[2][0])
@@ -247,16 +229,16 @@ function missile_ascend(rate){
         var ang = Math.atan(antis[i].k);
         var newY = antis[i].y + Math.sin(ang)*rate;
         var newX = antis[i].x + Math.cos(ang)*rate;
-        if(antis[i].destx <=1.5/2-0.25){
+        if(antis[i].destx < 0){
             ang = Math.atan(-antis[i].k);
             newX = antis[i].x - Math.cos(ang)*rate;
             newY = antis[i].y + Math.sin(ang)*rate;
         }
-        if(antis[i].desty > -0.5) {
+        if(antis[i].desty > -0.95) {
             antis[i].y = newY;
         }
         antis[i].x = newX;
-        if(antis[i].y >= 1.5) anti_explosion.push(i);
+        if(antis[i].y >= 1) anti_explosion.push(i);
     }
     for(var i = anti_explosion.length -1 ; i>=0; i--){
         antis.splice(anti_explosion[i],1);
@@ -811,7 +793,7 @@ function update_score(){
     if(score > missile_rate * 100000){
         missile_rate += 0.005;
         level += 1;
-        // console.log(missile_rate, level);
+        console.log(missile_rate, level);
     }
 
     var scoreLabel = document.getElementById("score");

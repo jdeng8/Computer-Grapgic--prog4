@@ -84,7 +84,7 @@ function shot(event) {
 
 function newMissile(s){
     animationTime++;
-    if(animationTime*missile_rate *100 > s) {
+    if(animationTime > s) {
         animationTime = 0;
         return true;
     }
@@ -239,7 +239,7 @@ function missile_descend(rate){
         }
         missile.splice(missile_explosion[i],1);
     }
-    // if(missile.length > 10) missile.splice(0,3);
+    if(missile.length > 10) missile.splice(0,1);
 }
 function destroyCity(m, c){
     if(m.dest >= c.vertices[0][0] && m.dest <= c.vertices[2][0])
@@ -451,7 +451,7 @@ function loadModels() {
             "normals": [[0, 1, 0],[0, 1, 0],[0, 1, 0],[0, 1, 0]],
             "triangles": [[0,1,2],[2,3,1]]
           }
-          inputTriangles.push(terrain);
+    inputTriangles.push(terrain);
 
     try {
         if (inputTriangles == String.null)

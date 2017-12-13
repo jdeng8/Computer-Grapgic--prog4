@@ -84,7 +84,7 @@ function shot(event) {
 
 function newMissile(s){
     animationTime++;
-    if(animationTime*missile_rate *50 > s) {
+    if(animationTime*missile_rate *100 > s) {
         animationTime = 0;
         return true;
     }
@@ -122,7 +122,7 @@ function constructCity(num, height){
     if(num%2 == 0) num += 1;
     var buildings = [];
     var width = 2/num;
-    var ground = -0.5;
+    var ground = -0.45;
     var left = -0.5;
     var right = left + width;
     var amb_building = vec3.fromValues(0.1,0.1,0.1);
@@ -151,13 +151,19 @@ function constructCity(num, height){
         vec3.add(dif,dif_building,[Math.random()*0.1,Math.random()*0.1,Math.random()*0.1]);
         vec3.add(spe,spe_building,[Math.random()*0.1,Math.random()*0.1,Math.random()*0.1]);
 
-        var ceiling = -0.45+Math.random()*0.05;
+        var ceiling = ground+0.05+Math.random()*0.07;
 
         var building = {
-            "material": {"ambient": amb, "diffuse": dif, "specular": spe, "n":5}, 
-            "vertices": [[left, ground, 0.5],[left, ceiling, 0.5],[right,ceiling,0.5],[right,ground,0.5]],
-            "normals": [[0, 0, -1],[0, 0, -1],[0, 0, -1],[0, 0, -1]],
-            "triangles": [[0,1,2],[2,3,0]]
+            "material": {"ambient": amb, "diffuse": dif, "specular": spe, "n":10}, 
+            "vertices": [[left, ground, 0.5],[left, ceiling, 0.5],[right,ceiling,0.5],[right,ground,0.5],
+                            [right,ceiling,0.5],[right,ground,0.5],[right,ceiling,0.54],[right,ground,0.54],
+                            [left, ground, 0.5],[left, ceiling, 0.5],[left,ceiling,0.54],[left,ground,0.54],
+                            [left, ceiling, 0.5],[right, ceiling, 0.5],[left,ceiling,0.54],[right,ceiling,0.54]],
+            "normals": [[0, 0, -1],[0, 0, -1],[0, 0, -1],[0, 0, -1],
+                        [1, 0, 0],[1, 0, 0],[1, 0, 0],[1, 0, 0],
+                        [-1, 0, 0],[-1, 0, 0],[-1, 0, 0],[-1, 0, 0],
+                        [0, 1, 0],[0, 1, 0],[0, 1, 0],[0, 1, 0]],
+            "triangles": [[0,1,2],[2,3,0],[4,5,6],[6,7,5],[8,9,10],[10,11,8],[12,13,14],[14,13,15]]
           }
         buildings.push(building);
         left = right;
@@ -172,13 +178,13 @@ function construct_anti_missile(num,height){
     var left = 0.4545;
     var right = left + width;
     var mid = left/2 + right/2;
-    var ground = -0.5;
+    var ground = -0.45;
     
     var anti_missile = {
-            "material": {"ambient": [0.2,0.2,0.2], "diffuse": [1,0.84,0], "specular": [0.2,0.2,0.2], "n":15}, 
-            "vertices": [[left, ground, 0.5],[mid, -0.2, 0.5],[right,ground,0.5]],
-            "normals": [[0, 0, -1],[0, 0, -1],[0, 0, -1]],
-            "triangles": [[0,1,2]]
+            "material": {"ambient": [0.2,0.2,0.2], "diffuse": [1,0.84,0], "specular": [0.5,0.5,0.5], "n":15}, 
+            "vertices": [[left, ground, 0.52],[mid, ground, 0.5],[mid, -0.18, 0.52],[mid, ground, 0.5],[mid, -0.18, 0.52],[right,ground,0.52]],
+            "normals": [[-1, 0, -1],[-1, 0, -1],[-1, 0, -1],[1, 0, -1],[1, 0, -1],[1, 0, -1]],
+            "triangles": [[0,1,2],[3,4,5]]
         }
     return anti_missile;
 }
@@ -214,7 +220,7 @@ function missile_descend(rate){
         }
         missile[i].y = newY;
         missile[i].x = newX;
-        if(missile[i].y < - 0.5) missile_explosion.push(i);
+        if(missile[i].y < - 0.42) missile_explosion.push(i);
     }
     missile_explosion.sort();
 
@@ -252,7 +258,7 @@ function missile_ascend(rate){
             newX = antis[i].x - Math.cos(ang)*rate;
             newY = antis[i].y + Math.sin(ang)*rate;
         }
-        if(antis[i].desty > -0.5) {
+        if(antis[i].desty > -0.42) {
             antis[i].y = newY;
         }
         antis[i].x = newX;
@@ -439,6 +445,13 @@ function loadModels() {
     
     // inputTriangles = getJSONFile(INPUT_TRIANGLES_URL,"triangles"); // read in the triangle data
     inputTriangles = city;
+    var terrain = {
+            "material": {"ambient": [0.1,0.1,0.1], "diffuse": [0.1,0.5,0.1], "specular": [0.1,0.1,0.1], "n":3}, 
+            "vertices": [[-0.6, -0.5, 0.5],[1.62, -0.5, 0.5],[-0.6,-0.5,0.75],[1.62,-0.5,0.75]],
+            "normals": [[0, 1, 0],[0, 1, 0],[0, 1, 0],[0, 1, 0]],
+            "triangles": [[0,1,2],[2,3,1]]
+          }
+          inputTriangles.push(terrain);
 
     try {
         if (inputTriangles == String.null)
